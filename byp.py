@@ -4,7 +4,7 @@ import asyncio
 import logging
 from pathlib import Path
 from typing import List, Optional, Dict
-
+import httpx
 import aiohttp
 from fastapi import FastAPI, HTTPException, Request, Header
 from fastapi.responses import HTMLResponse, JSONResponse
