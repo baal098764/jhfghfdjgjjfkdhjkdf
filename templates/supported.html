@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta 
+    name="viewport" 
+    content="width=device-width, initial-scale=1.0" 
+  />
+  <title>Supported Websites</title>
+  <style>
+    /* ----------------------------
+       RESET & GLOBALS
+    ---------------------------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      background-color: #121212;
+      color: #fff;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      line-height: 1.5;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease-in-out;
+    }
+    a:hover {
+      color: #4C7BF7;
+    }
+    ul {
+      list-style: none;
+    }
+    h1, h2, h3 {
+      margin-bottom: 1rem;
+    }
+
+    /* ----------------------------
+       VARIABLES (CSS Custom Properties)
+    ---------------------------- */
+    :root {
+      --bg-main: #121212;
+      --bg-card: #1f1f1f;
+      --text-main: #ffffff;
+      --text-subtle: #bbbbbb;
+      --accent-gradient: linear-gradient(90deg, #4C7BF7, #FF4081);
+      --border-radius: 8px;
+      --shadow: rgba(0, 0, 0, 0.5) 0px 4px 12px;
+      --transition-fast: 0.2s ease-in-out;
+    }
+
+    /* ----------------------------
+       LAYOUT CONTAINERS
+    ---------------------------- */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    .header-title {
+      font-size: 2rem;
+      font-weight: 700;
+      display: inline-block;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+    .header-title::after {
+      content: "";
+      position: absolute;
+      height: 4px;
+      width: 50%;
+      left: 25%;
+      bottom: -8px;
+      background: var(--accent-gradient);
+    }
+    .support-icon {
+      display: inline-flex;
+      align-items: center;
+      font-size: 1rem;
+      color: var(--text-subtle);
+      margin-top: 0.5rem;
+    }
+    .support-icon svg {
+      margin-right: 0.5rem;
+      fill: var(--text-subtle);
+    }
+
+    .card-wrapper {
+      background-color: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: var(--shadow);
+      display: inline-block;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .columns {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+    .column {
+      background-color: #272727;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      width: 220px;
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 8px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .column:hover {
+      transform: translateY(-4px);
+      box-shadow: rgba(0, 0, 0, 0.6) 0px 4px 16px;
+    }
+    .column h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-main);
+    }
+    .column li {
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #3a3a3a;
+    }
+    .column li:last-child {
+      border-bottom: none;
+    }
+    .column a {
+      font-size: 0.95rem;
+      color: #bbbbbb;
+    }
+
+    /* ----------------------------
+       FOOTER
+    ---------------------------- */
+    .footer {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: var(--text-subtle);
+    }
+
+    /* ----------------------------
+       MEDIA QUERIES
+    ---------------------------- */
+    @media (max-width: 768px) {
+      .columns {
+        flex-direction: column;
+        align-items: center;
+      }
+      .column {
+        width: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <h1 class="header-title">SUPPORTED WEBSITES</h1>
+    <div class="support-icon">
+      <!-- Simple globe icon (SVG) -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
+                 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8
+                 s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6h6v-2h-4z"/>
+      </svg>
+      Supported websites
+    </div>
+
+    <!-- CARD WITH COLUMNS -->
+    <div class="card-wrapper">
+      <div class="columns">
+        <!-- Single column for Lockr.so -->
+        <div class="column">
+          <h3>Ad-Link Services</h3>
+          <ul>
+            <li>
+              <a href="https://lockr.so" target="_blank" rel="noopener noreferrer">
+                Lockr.so
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER NOTE -->
+    <div class="footer">
+      © 2025 Lockify • This list is up to date as of today
+    </div>
+  </div>
+</body>
+</html>
