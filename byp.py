@@ -15,7 +15,7 @@ from pydantic import BaseModel
 # ------------------------------------------------------------------------------  
 # CONFIGURATION & FILE PATHS
 # ------------------------------------------------------------------------------  
-SERVICE_URL = "https://lockify-a1ef.onrender.com/"
+SERVICE_URL = "https://lockify-a1ef.onrender.com"
 API_TOKEN = "7317583394:AAEYbx0JYDvOAUeN5xuKEQBAqolQjIpEgKY"  # (Used for premium endpoints.)
 
 # SINGLE FastAPI instance (ensures /static stays mounted)
