@@ -5,3 +5,4 @@ Jinja2
 python-multipart
 httpx
 aiofiles
+aiohttp
