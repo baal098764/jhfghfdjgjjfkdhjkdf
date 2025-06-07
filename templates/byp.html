@@ -432,10 +432,6 @@
   <div id="trap-modal">
     <div class="modal-content">
       <div class="glow-text">nuh uh buddy</div>
-      <div class="glow-text">no skid i don't think so</div>
-      <div class="glow-text">leave me alone shi</div>
-      <div class="glow-text">get out of here</div>
-      <div class="glow-text">try again lol</div>
     </div>
   </div>
 
@@ -617,13 +613,14 @@
         }
       }, true);
 
+      // CUSTOM CONTEXT MENU: no trap on right-click
       document.addEventListener('contextmenu', e=>{
         e.preventDefault();
         lastSelection = window.getSelection().toString();
-        menu.style.top = e.clientY+'px';
-        menu.style.left= e.clientX+'px';
-        menu.style.display='block';
-        showTrap();
+        menu.style.top = e.clientY + 'px';
+        menu.style.left = e.clientX + 'px';
+        menu.style.display = 'block';
+        // removed showTrap() to allow custom context menu without triggering trap
       });
 
       document.addEventListener('click', ()=> menu.style.display='none');
