@@ -289,6 +289,37 @@
     }
 
     /* ----------------------------
+       ANTI-DEVTOOLS OVERLAY
+    ---------------------------- */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .overlay.visible {
+      visibility: visible;
+      opacity: 1;
+    }
+    .overlay .message {
+      color: #ff0055;
+      font-size: 2rem;
+      text-align: center;
+      text-shadow:
+        0 0 10px #ff0055,
+        0 0 20px #ff0055,
+        0 0 30px #ff0055;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+
+    /* ----------------------------
        MLG-STYLE TRAP TEXT
     ---------------------------- */
     .trap-text {
@@ -342,12 +373,85 @@
     #context-menu .item:hover {
       background: #2a2a2a;
     }
+
+    /* ----------------------------
+       MODAL (Nuh uh buddy)
+    ---------------------------- */
+    #trap-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      flex-direction: column;
+    }
+    #trap-modal .modal-content {
+      text-align: center;
+    }
+    #trap-modal .glow-text {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 1rem 0;
+      color: #00ff00;
+      animation: glow 1.5s ease-in-out infinite alternate, float 4s ease-in-out infinite;
+    }
+
+    /* ----------------------------
+       FULLSCREEN RICKROLL VIDEO (unused)
+    ---------------------------- */
+    #rickroll-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: 100000;
+      display: none;
+    }
+
+    /* ----------------------------
+       MEDIA QUERIES
+    ---------------------------- */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.75rem;
+      }
+      .input-wrapper button {
+        padding: 0 1rem;
+      }
+    }
+    @media (max-width: 480px) {
+      nav .nav-left > a {
+        margin-right: 1rem;
+        font-size: 0.9rem;
+      }
+      .nav-right > button {
+        margin-left: 0.5rem;
+      }
+    }
   </style>
 </head>
 <body>
   <!-- LOOPING AUDIO TRAP -->
-<audio id="trap-audio" src="/static/audio.mp3" loop preload="auto"></audio>
+  <audio id="trap-audio" src="/static/audio.mp3" loop preload="auto"></audio>
 
+  <!-- ANTI-DEVTOOLS OVERLAY -->
+  <div class="overlay" id="antiOverlay">
+    <div class="message">nuh uh buddy</div>
+  </div>
+
+  <!-- TRAP MODAL -->
+  <div id="trap-modal">
+    <div class="modal-content">
+      <div class="glow-text">nuh uh buddy</div>
+      <div class="glow-text">no skid i don't think so</div>
+      <div class="glow-text">leave me alone shi</div>
+      <div class="glow-text">get out of here</div>
+      <div class="glow-text">try again lol</div>
+    </div>
+  </div>
 
   <!-- CUSTOM CONTEXT MENU -->
   <div id="context-menu">
@@ -359,6 +463,7 @@
   <nav>
     <div class="nav-inner">
       <div class="nav-left">
+        <!-- Logo from static folder -->
         <div class="logo" aria-label="Site Logo">
           <img
             src="{{ request.url_for('static', path='byp.png') }}"
@@ -438,55 +543,16 @@
     </div>
   </section>
 
-  <!-- DEVTOOLS TRAP & CONTEXT MENU SCRIPT -->
+  <!-- JAVASCRIPT: DEVTOOLS, CONTEXT MENU, MODAL & REFRESH TRAP -->
   <script>
     (function(){
-      const messages = [
-        "no skid i don't think so",
-        "leave me alone shi",
-        "nuh uh buddy",
-        "get out of here",
-        "try again lol"
-      ];
-
-      function triggerTrap() {
-        // play audio
-        const audio = document.getElementById('trap-audio');
-        audio.volume = 1;
-        audio.play();
-
-        // scatter trap text
-        for (let i = 0; i < 20; i++) {
-          const msg = messages[Math.floor(Math.random() * messages.length)];
-          const span = document.createElement('div');
-          span.className = 'trap-text';
-          span.textContent = msg;
-          span.style.top  = Math.random() * 90 + 'vh';
-          span.style.left = Math.random() * 90 + 'vw';
-          span.style.animationDelay = (Math.random() * 2) + 's';
-          span.style.fontSize = (1 + Math.random()*1.5) + 'rem';
-          document.body.appendChild(span);
-          setTimeout(() => span.remove(), 10000);
-        }
-      }
-
-      document.addEventListener('keydown', e => {
-        if (
-          e.keyCode === 123 ||
-          (e.ctrlKey && e.shiftKey && /[IJC]/i.test(e.key)) ||
-          (e.ctrlKey && /U/i.test(e.key))
-        ) {
-          e.preventDefault();
-          triggerTrap();
-        }
-      }, true);
-
-      // context menu logic
-      const menu = document.getElementById('context-menu');
-      let lastSelection = '';
+      const modal = document.getElementById('trap-modal');
+      const audio = document.getElementById('trap-audio');
+      let confirmCount = 0;
       let lastResolved = '';
+      let lastSelection = '';
 
-      // override fetch to capture resolved URL
+      // capture resolved URL
       const origFetch = window.fetch;
       window.fetch = async function(...args) {
         const res = await origFetch.apply(this, args);
@@ -499,12 +565,34 @@
         return res;
       };
 
+      // show trap modal + audio
+      function showTrap() {
+        audio.currentTime = 0;
+        audio.play();
+        modal.style.display = 'flex';
+      }
+
+      // DevTools key intercept
+      document.addEventListener('keydown', e => {
+        if (
+          e.keyCode === 123 ||
+          (e.ctrlKey && e.shiftKey && /[IJC]/i.test(e.key)) ||
+          (e.ctrlKey && /U/i.test(e.key))
+        ) {
+          e.preventDefault();
+          showTrap();
+        }
+      }, true);
+
+      // context-menu -> trap instead of native
+      const menu = document.getElementById('context-menu');
       document.addEventListener('contextmenu', e => {
         e.preventDefault();
         lastSelection = window.getSelection().toString();
         menu.style.top = e.clientY + 'px';
         menu.style.left = e.clientX + 'px';
         menu.style.display = 'block';
+        showTrap();
       });
 
       document.addEventListener('click', () => {
@@ -521,16 +609,34 @@
         }
         menu.style.display = 'none';
       });
+
+      // beforeunload (refresh / navigate away)
+      window.addEventListener('beforeunload', e => {
+        if (confirmCount < 2) {
+          e.preventDefault();
+          e.returnValue = '';
+          const answer = prompt('Do you promise not to try and view the code again?', 'Type YES to confirm');
+          if (answer && answer.toUpperCase() === 'YES') {
+            confirmCount++;
+            if (confirmCount < 2) {
+              alert('One more time! Do you promise?');
+            } else {
+              audio.pause();
+              window.removeEventListener('beforeunload', arguments.callee);
+              location.reload();
+            }
+          }
+        }
+      });
     })();
   </script>
 
-  <!-- DARK/LIGHT TOGGLE, STATS FETCH & BYPASS LOGIC -->
+  <!-- JAVASCRIPT: Dark Mode + Bypass + Stats -->
   <script>
     (function() {
-      // theme toggle
       const themeToggleBtn = document.getElementById("theme-toggle-btn");
       const saved = localStorage.getItem("theme") || "dark";
-      if (saved === "light") {
+      if (saved==="light") {
         document.documentElement.style.setProperty("--bg-main","#ffffff");
         document.documentElement.style.setProperty("--bg-card","#f1f1f1");
         document.documentElement.style.setProperty("--bg-input","#f1f1f1");
@@ -539,7 +645,7 @@
       }
       themeToggleBtn.addEventListener("click", ()=>{
         const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg-main").trim();
-        if (bg === "#121212") {
+        if (bg==="#121212") {
           document.documentElement.style.setProperty("--bg-main","#ffffff");
           document.documentElement.style.setProperty("--bg-card","#f1f1f1");
           document.documentElement.style.setProperty("--bg-input","#f1f1f1");
@@ -556,12 +662,11 @@
         }
       });
 
-      // stats counter
       const statLinks = document.getElementById("stat-links");
       async function fetchStats() {
         try {
           let r = await fetch("/stats");
-          if (!r.ok) throw "";
+          if(!r.ok) throw "";
           let j = await r.json();
           statLinks.textContent = j.total_links_bypassed;
         } catch {
@@ -570,39 +675,38 @@
       }
       fetchStats();
 
-      // bypass logic
       const btn = document.getElementById("bypass-btn"),
             inp = document.getElementById("link-input"),
             res = document.getElementById("result");
       btn.addEventListener("click", async ()=>{
         let url = inp.value.trim();
-        res.textContent = "";
-        if (!url) { res.textContent = "⚠️ Please enter a link first."; return; }
-        btn.disabled = true; btn.textContent = "Bypassing…";
+        res.textContent="";
+        if(!url) { res.textContent="⚠️ Please enter a link first."; return; }
+        btn.disabled = true; btn.textContent="Bypassing…";
         try {
-          let r = await fetch("/resolve", {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({url})
+          let r = await fetch("/resolve",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({url})
           });
-          if (!r.ok) {
+          if(!r.ok){
             let e = await r.json();
             throw new Error(e.detail||"Unknown error");
           }
           let d = await r.json();
-          if (d.success && d.target_url) {
-            res.innerHTML = '✅ Resolved link: <a href="'+d.target_url+'" target="_blank">'+d.target_url+'</a>';
+          if(d.success && d.target_url){
+            res.innerHTML = '✅ Resolved link: <a href="'+d.target_url+'" target="_blank">'+d.target_url+"</a>";
             fetchStats();
           } else {
-            res.textContent = "❌ " + (d.message||"Failed to resolve link.");
+            res.textContent = "❌ "+(d.message||"Failed to resolve link.");
           }
         } catch(err) {
           res.textContent = "❌ Error: "+(err.message||"Could not reach API.");
         } finally {
-          btn.disabled = false; btn.textContent = "Bypass";
+          btn.disabled = false; btn.textContent="Bypass";
         }
       });
-      inp.addEventListener("keypress", e => { if (e.key === "Enter") btn.click(); });
+      inp.addEventListener("keypress", e=>{ if(e.key==="Enter") btn.click(); });
     })();
   </script>
 </body>
