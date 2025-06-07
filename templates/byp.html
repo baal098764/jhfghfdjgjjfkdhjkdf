@@ -13,7 +13,7 @@
   <link rel="shortcut icon" href="{{ request.url_for('static', path='byp.png') }}" />
 
   <!-- Open Graph / Facebook Embed -->
-  <meta property="og:title" content="Lockr.so Ad-Link Bypasser" />
+  <meta property="og:title" content="Lockify" />
   <meta property="og:description" content="Bypass Lockr.so ad links instantly with our free and reliable redirect generator." />
   <meta property="og:image" content="{{ request.url_for('static', path='byp.png') }}" />
   <meta property="og:url" content="{{ request.url_for('static', path='') }}" />
@@ -21,7 +21,7 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Lockr.so Ad-Link Bypasser" />
+  <meta name="twitter:title" content="Lockify" />
   <meta name="twitter:description" content="Bypass Lockr.so ad links instantly with our free and reliable redirect generator." />
   <meta name="twitter:image" content="{{ request.url_for('static', path='byp.png') }}" />
 
@@ -288,6 +288,60 @@
     }
 
     /* ----------------------------
+       GLOWING CUSTOM MESSAGE
+    ---------------------------- */
+    #custom-message {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font-size: 1.25rem;
+      font-weight: bold;
+      pointer-events: none;
+      color: #4C7BF7;
+      text-shadow:
+        0 0 5px #4C7BF7,
+        0 0 10px #4C7BF7,
+        0 0 20px #4C7BF7;
+      animation: glow-blue 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes glow-blue {
+      from {
+        text-shadow:
+          0 0 5px #4C7BF7,
+          0 0 10px #4C7BF7;
+      }
+      to {
+        text-shadow:
+          0 0 10px #4C7BF7,
+          0 0 20px #4C7BF7,
+          0 0 30px #4C7BF7;
+      }
+    }
+
+    /* ----------------------------
+       CUSTOM CONTEXT MENU
+    ---------------------------- */
+    #context-menu {
+      position: fixed;
+      display: none;
+      background: #1f1f1f;
+      border: 1px solid #333;
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      z-index: 10000;
+      padding: 0.25rem 0;
+    }
+    #context-menu .item {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 0.95rem;
+    }
+    #context-menu .item:hover {
+      background: #2a2a2a;
+    }
+
+    /* ----------------------------
        ANTI-DEVTOOLS OVERLAY
     ---------------------------- */
     .overlay {
@@ -359,6 +413,15 @@
     <div class="message">nuh uh buddy</div>
   </div>
 
+  <!-- CUSTOM GLOWING MESSAGE -->
+  <div id="custom-message">🚀 Enjoy bypassing your links! 🚀</div>
+
+  <!-- CUSTOM CONTEXT MENU -->
+  <div id="context-menu">
+    <div class="item" data-action="copy-page">Copy Page URL</div>
+    <div class="item" data-action="copy-link">Copy Link HREF</div>
+  </div>
+
   <script>
     (function(){
       // show the custom overlay
@@ -383,7 +446,10 @@
         if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) return triggerBlock(e);
         if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) return triggerBlock(e);
       }, true);
-      document.addEventListener('contextmenu', triggerBlock, true);
+
+      // disable the original contextmenu blocker (commented out)
+      // document.addEventListener('contextmenu', triggerBlock, true);
+
       if (location.protocol === 'view-source:') {
         triggerBlock();
       }
@@ -474,9 +540,10 @@
     </div>
   </section>
 
-  <!-- JAVASCRIPT: Dark Mode + Bypass + Stats -->
+  <!-- JAVASCRIPT: Dark Mode + Bypass + Stats + CONTEXT MENU -->
   <script>
     (function() {
+      // Dark/Light toggle
       const themeToggleBtn = document.getElementById("theme-toggle-btn");
       const saved = localStorage.getItem("theme") || "dark";
       if (saved==="light") {
@@ -505,6 +572,7 @@
         }
       });
 
+      // Stats counter
       const statLinks = document.getElementById("stat-links");
       async function fetchStats() {
         try {
@@ -518,6 +586,7 @@
       }
       fetchStats();
 
+      // Bypass form
       const btn = document.getElementById("bypass-btn"),
             inp = document.getElementById("link-input"),
             res = document.getElementById("result");
@@ -550,6 +619,30 @@
         }
       });
       inp.addEventListener("keypress", e=>{ if(e.key==="Enter") btn.click(); });
+
+      // CUSTOM CONTEXT MENU LOGIC
+      const menu = document.getElementById('context-menu');
+      document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        const { clientX: x, clientY: y, target } = e;
+        menu.style.top = y + 'px';
+        menu.style.left = x + 'px';
+        menu.style.display = 'block';
+        // store the clicked element
+        menu.dataset.targetHref = (target.closest('a') || {}).href || '';
+      });
+      document.addEventListener('click', () => {
+        menu.style.display = 'none';
+      });
+      menu.addEventListener('click', async e => {
+        const action = e.target.dataset.action;
+        if (action === 'copy-page') {
+          await navigator.clipboard.writeText(window.location.href);
+        } else if (action === 'copy-link' && menu.dataset.targetHref) {
+          await navigator.clipboard.writeText(menu.dataset.targetHref);
+        }
+        menu.style.display = 'none';
+      });
     })();
   </script>
 </body>
