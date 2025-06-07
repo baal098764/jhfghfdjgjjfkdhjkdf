@@ -398,18 +398,6 @@
     }
 
     /* ----------------------------
-       FULLSCREEN RICKROLL VIDEO (unused)
-    ---------------------------- */
-    #rickroll-video {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      object-fit: cover;
-      z-index: 100000;
-      display: none;
-    }
-
-    /* ----------------------------
        MEDIA QUERIES
     ---------------------------- */
     @media (max-width: 768px) {
@@ -532,8 +520,25 @@
   </section>
 
   <!-- JAVASCRIPT: DEVTOOLS, CONTEXT MENU, MODAL & REFRESH TRAP -->
-  <script>  
+  <script>
     (function(){
+      // on-load devtools detection & redirect
+      (function(){
+        const REDIR = 'https://www.bbc.com/future/article/20150422-how-not-to-be-stupid';
+        function detectDevTools(){
+          const threshold = 160;
+          if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
+            window.location.href = REDIR;
+          }
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined'
+           || typeof __VUE_DEVTOOLS_GLOBAL_HOOK__   !== 'undefined') {
+            window.location.href = REDIR;
+          }
+        }
+        window.addEventListener('load', detectDevTools);
+        setInterval(detectDevTools, 1000);
+      })();
+
       // ==== endpoint obfuscation ====
       const EP = {
         resolve:   'L3Jlc29sdmU=',
@@ -573,9 +578,7 @@
       function showTrap(){
         audio.currentTime = 0; audio.play();
         modal.style.display = 'flex';
-        // remove old dynamic
         modal.querySelectorAll('.trap-text').forEach(el=>el.remove());
-        // add 20 moving texts inside modal
         const messages = [
           "nuh uh buddy","no skid i don't think so",
           "leave me alone shi","get out of here","try again lol"
@@ -674,7 +677,6 @@
           }
         });
 
-        // stats
         const statLinks = document.getElementById("stat-links");
         async function fetchStats(){
           try{
@@ -688,7 +690,6 @@
         }
         fetchStats();
 
-        // bypass
         const btn = document.getElementById("bypass-btn"),
               inp = document.getElementById("link-input"),
               res = document.getElementById("result");
