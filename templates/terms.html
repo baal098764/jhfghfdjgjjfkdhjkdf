@@ -6,7 +6,25 @@
     name="viewport" 
     content="width=device-width, initial-scale=1.0" 
   />
-  <title>Terms of Service</title>
+  <title>Lockify</title>
+
+  <!-- Favicon / Tab Icon -->
+  <link rel="icon" href="{{ request.url_for('static', path='byp.png') }}" type="image/png" />
+  <link rel="shortcut icon" href="{{ request.url_for('static', path='byp.png') }}" />
+
+  <!-- Open Graph / Facebook Embed -->
+  <meta property="og:title" content="Lockify" />
+  <meta property="og:description" content="Bypass Lockr.so ad links instantly with our free and reliable redirect generator." />
+  <meta property="og:image" content="{{ request.url_for('static', path='byp.png') }}" />
+  <meta property="og:url" content="{{ request.url_for('static', path='') }}" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lockify" />
+  <meta name="twitter:description" content="Bypass Lockr.so ad links instantly with our free and reliable redirect generator." />
+  <meta name="twitter:image" content="{{ request.url_for('static', path='byp.png') }}" />
+
   <style>
     /* ----------------------------
        RESET & GLOBALS
@@ -23,24 +41,21 @@
       color: #fff;
       font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
         Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-      line-height: 1.6;
+      line-height: 1.5;
+      overflow-x: hidden;
     }
     a {
       color: inherit;
       text-decoration: none;
-      transition: color 0.2s ease-in-out;
     }
-    a:hover {
-      color: #4C7BF7;
+    button {
+      cursor: pointer;
+      border: none;
+      outline: none;
+      font-family: inherit;
     }
-    ul {
-      list-style: none;
-    }
-    h1, h2, h3, h4 {
-      margin-bottom: 1rem;
-    }
-    p {
-      margin-bottom: 0.75rem;
+    img, svg {
+      display: block;
     }
 
     /* ----------------------------
@@ -48,254 +63,668 @@
     ---------------------------- */
     :root {
       --bg-main: #121212;
-      --bg-content: #1f1f1f;
+      --bg-card: #1f1f1f;
+      --bg-input: #1f1f1f;
       --text-main: #ffffff;
       --text-subtle: #bbbbbb;
-      /* 4-color gradient: blue → purple → red → yellow */
-      --accent-gradient: linear-gradient(
-        90deg,
-        #4C7BF7 0%,
-        #8E44AD 33%,
-        #FF5252 66%,
-        #FFEB3B 100%
-      );
-      --border-radius: 6px;
+      --accent-gradient: linear-gradient(90deg, #4C7BF7, #FF4081);
+      --border-radius: 8px;
       --shadow: rgba(0, 0, 0, 0.5) 0px 4px 12px;
       --transition-fast: 0.2s ease-in-out;
-      --max-width: 800px;
-      --content-padding: 2rem;
+    }
+
+    /* ----------------------------
+       TYPOGRAPHY
+    ---------------------------- */
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+    h1::after {
+      content: "";
+      position: absolute;
+      height: 4px;
+      width: 50%;
+      left: 25%;
+      bottom: -6px;
+      background: var(--accent-gradient);
+    }
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      font-size: 0.95rem;
+      color: var(--text-subtle);
+      margin-bottom: 1rem;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    .stat-label {
+      font-size: 1rem;
+      color: var(--text-subtle);
+      margin-top: 0.25rem;
     }
 
     /* ----------------------------
        LAYOUT CONTAINERS
     ---------------------------- */
     .container {
-      max-width: var(--max-width);
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 3rem 1rem;
+      padding: 0 1rem;
     }
-
-    /* Page title with gradient underline */
-    .page-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      display: inline-block;
-      position: relative;
-      letter-spacing: 1px;
-      margin-bottom: 1.5rem;
-      color: var(--text-main);
-    }
-    .page-title::after {
-      content: "";
-      position: absolute;
-      height: 4px;
+    nav {
       width: 100%;
-      left: 0;
-      bottom: -8px;
-      background: var(--accent-gradient);
-      border-radius: 2px;
-    }
-
-    /* CONTENT BOX */
-    .content-box {
-      background-color: var(--bg-content);
-      border-radius: var(--border-radius);
-      padding: var(--content-padding);
+      background-color: var(--bg-main);
+      padding: 1rem 0;
       box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-
-    /* SECTION HEADINGS */
-    .content-box h2 {
-      font-size: 1.4rem;
-      font-weight: 600;
-      margin-top: 1.5rem;
-      margin-bottom: 0.75rem;
-      color: var(--text-main);
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
     }
-    .content-box h3 {
-      font-size: 1.1rem;
+    .nav-left, .nav-right {
+      display: flex;
+      align-items: center;
+    }
+    .nav-left > a, .nav-left > div.logo {
+      margin-right: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+    .nav-left > a {
+      font-size: 0.95rem;
       font-weight: 500;
-      margin-top: 1.25rem;
-      margin-bottom: 0.5rem;
       color: var(--text-main);
+      transition: color var(--transition-fast);
+    }
+    .nav-left > a:hover {
+      color: var(--accent-gradient);
+    }
+    .nav-right > button {
+      background: none;
+      margin-left: 1rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      transition: color var(--transition-fast);
+    }
+    .nav-right > button:hover {
+      color: var(--accent-gradient);
     }
 
-    /* PARAGRAPHS & LISTS */
-    .content-box p {
-      font-size: 1rem;
-      color: var(--text-main);
-    }
-    .content-box ol,
-    .content-box ul {
-      margin-left: 1.25rem;
-      margin-bottom: 1rem;
-    }
-    .content-box li {
-      margin-bottom: 0.5rem;
-      color: var(--text-main);
-    }
-    .content-box li::marker {
-      color: #4C7BF7;
-      font-weight: bold;
-    }
-
-    /* FOOTER */
-    .footer {
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      color: var(--text-subtle);
+    /* ----------------------------
+       HERO SECTION
+    ---------------------------- */
+    .hero {
+      padding: 4rem 0 1rem 0;
       text-align: center;
     }
-    .footer a {
-      border-bottom: 1px solid var(--text-subtle);
-      font-weight: 500;
+    .input-wrapper {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
     }
-    .footer a:hover {
+    .input-wrapper input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background-color: var(--bg-input);
+      border: 1px solid #333;
+      border-radius: var(--border-radius);
+      color: var(--text-main);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+    .input-wrapper input:focus {
+      border-color: #4C7BF7;
+    }
+    .input-wrapper button {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      background: var(--accent-gradient);
+      color: #fff;
+      padding: 0 1.5rem;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: opacity var(--transition-fast);
+    }
+    .input-wrapper button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 1rem;
+      font-size: 1rem;
+      word-break: break-all;
+    }
+    .result a {
       color: #4C7BF7;
-      border-bottom-color: #4C7BF7;
+      text-decoration: underline;
     }
 
-    /* RESPONSIVE */
-    @media (max-width: 600px) {
-      .page-title {
-        font-size: 2rem;
+    /* ----------------------------
+       FEATURE CARDS
+    ---------------------------- */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin: 3rem 0;
+    }
+    .card {
+      background-color: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: 2rem 1.5rem;
+      box-shadow: var(--shadow);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: rgba(0, 0, 0, 0.6) 0px 6px 16px;
+    }
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    .card a {
+      font-size: 0.9rem;
+      color: #4C7BF7;
+    }
+    .card a:hover {
+      text-decoration: underline;
+    }
+
+    /* ----------------------------
+       STATS SECTION
+    ---------------------------- */
+    .stats-section {
+      background-color: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: 2rem 1.5rem;
+      margin: 3rem 0 4rem 0;
+      box-shadow: var(--shadow);
+    }
+    .stats-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+    .stat-card {
+      background-color: #2a2a2a;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      color: #4C7BF7;
+    }
+
+    /* ----------------------------
+       ANTI-DEVTOOLS OVERLAY
+    ---------------------------- */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .overlay.visible {
+      visibility: visible;
+      opacity: 1;
+    }
+    .overlay .message {
+      color: #ff0055;
+      font-size: 2rem;
+      text-align: center;
+      text-shadow:
+        0 0 10px #ff0055,
+        0 0 20px #ff0055,
+        0 0 30px #ff0055;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+
+    /* ----------------------------
+       MLG-STYLE TRAP TEXT
+    ---------------------------- */
+    .trap-text {
+      position: absolute;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #00ff00;
+      text-transform: uppercase;
+      white-space: nowrap;
+      animation: float 4s ease-in-out infinite, glow 1.5s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes float {
+      0%   { transform: translateY(0) translateX(0); }
+      50%  { transform: translateY(-20px) translateX(10px); }
+      100% { transform: translateY(0) translateX(0); }
+    }
+    @keyframes glow {
+      from {
+        text-shadow:
+          0 0 5px #00ff00,
+          0 0 10px #00ff00;
       }
-      .content-box {
-        padding: 1.5rem;
+      to {
+        text-shadow:
+          0 0 15px #00ff00,
+          0 0 30px #00ff00,
+          0 0 45px #00ff00;
       }
-      .content-box h2 {
-        font-size: 1.25rem;
+    }
+
+    /* ----------------------------
+       CUSTOM CONTEXT MENU
+    ---------------------------- */
+    #context-menu {
+      position: fixed;
+      display: none;
+      background: #1f1f1f;
+      border: 1px solid #333;
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      z-index: 10000;
+      padding: 0.25rem 0;
+      font-size: 0.95rem;
+    }
+    #context-menu .item {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: #fff;
+    }
+    #context-menu .item:hover {
+      background: #2a2a2a;
+    }
+
+    /* ----------------------------
+       MODAL (Nuh uh buddy)
+    ---------------------------- */
+    #trap-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      flex-direction: column;
+    }
+    #trap-modal .modal-content { text-align: center; }
+    #trap-modal .glow-text {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 1rem 0;
+      color: #00ff00;
+      animation: glow 1.5s ease-in-out infinite alternate, float 4s ease-in-out infinite;
+    }
+
+    /* ----------------------------
+       MEDIA QUERIES
+    ---------------------------- */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.75rem;
       }
-      .content-box p,
-      .content-box li {
-        font-size: 0.95rem;
+      .input-wrapper button {
+        padding: 0 1rem;
+      }
+    }
+    @media (max-width: 480px) {
+      nav .nav-left > a {
+        margin-right: 1rem;
+        font-size: 0.9rem;
+      }
+      .nav-right > button {
+        margin-left: 0.5rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- PAGE TITLE -->
-    <h1 class="page-title">Terms of Service</h1>
+  <!-- LOOPING AUDIO TRAP -->
+  <audio id="trap-audio" src="/static/audio.mp3" loop preload="auto"></audio>
 
-    <!-- CONTENT BOX -->
-    <div class="content-box">
-      <!-- 1. Introduction -->
-      <h2>1. Introduction</h2>
-      <p>
-        Welcome to Lockify (the “<span style="font-weight:600;">Service</span>”). These Terms of Service (“<strong>Terms</strong>”) govern your access to and use of our API, website, and related services (collectively, the “Service”). By using or accessing the Service, you agree to be bound by these Terms.
-      </p>
+  <!-- ANTI-DEVTOOLS OVERLAY -->
+  <div class="overlay" id="antiOverlay">
+    <div class="message">nuh uh buddy</div>
+  </div>
 
-      <!-- 2. Acceptance of Terms -->
-      <h2>2. Acceptance of Terms</h2>
-      <p>
-        a. By signing up for an account or otherwise using the Service, you acknowledge that you have read, understood, and agree to these Terms.<br>
-        b. If you do not agree to these Terms, you must not access or use the Service.
-      </p>
-
-      <!-- 3. Your Account -->
-      <h2>3. Your Account</h2>
-      <p>
-        a. REGISTRATION IN THE NEAR FUTURE.<br>
-	
-      </p>
-
-      <!-- 4. Subscription & Payment -->
-      <h2>4. Subscription &amp; Payment</h2>
-      <p>
-        a. The Service operates on a subscription basis (e.g., $10/month). You agree to pay all fees associated with your chosen plan.<br>
-        b. Payments are processed through a third-party payment processor. By providing payment information, you grant us permission to charge the applicable payment method.<br>
-        c. Rates and billing cycles are described on our pricing page. Lockify reserves the right to change subscription rates at any time, but such changes will not affect any pre-paid period.
-      </p>
-
-      <!-- 5. Refund & Cancellation Policy -->
-      <h2>5. Refund &amp; Cancellation Policy</h2>
-      <ol>
-        <li>
-          <strong>Cancellation:</strong> You may cancel your subscription at any time by logging into your account dashboard. Cancellation will take effect at the end of your current billing cycle.
-        </li>
-        <li>
-          <strong>Refunds:</strong> All fees are non-refundable, except where required by law or at our sole discretion.
-        </li>
-      </ol>
-
-      <!-- 6. Permitted Use -->
-      <h2>6. Permitted Use</h2>
-      <p>
-        a. You may use the Service only for lawful purposes and in accordance with these Terms.<br>
-        b. You agree not to:  
-      </p>
-      <ul>
-        <li>Use the Service to facilitate unlawful activities.</li>
-        <li>Reverse engineer, decompile, or attempt to extract source code.</li>
-        <li>Distribute or sublicense the Service without our express permission.</li>
-        <li>Share your API key or account credentials with unauthorized parties.</li>
-      </ul>
-
-      <!-- 7. Intellectual Property -->
-      <h2>7. Intellectual Property</h2>
-      <p>
-        a. All content, trademarks, logos, and intellectual property related to the Service are owned by Lockify or its licensors.<br>
-        b. You may not copy, modify, or distribute any part of the Service except as expressly authorized in writing by Lockify.
-      </p>
-
-      <!-- 8. Privacy -->
-      <h2>8. Privacy</h2>
-      <p>
-        Your use of the Service is also governed by our <a href="privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. Please review that document to understand how we collect and use personal information.
-      </p>
-
-      <!-- 9. Disclaimers & Liability -->
-      <h2>9. Disclaimers &amp; Liability</h2>
-      <p>
-        a. The Service is provided “<em>as is</em>” and “<em>as available</em>” without warranties of any kind.<br>
-        b. To the fullest extent permitted by law, Lockify disclaims all warranties, whether express or implied, including warranties of merchantability, fitness for a particular purpose, or non-infringement.<br>
-        c. Lockify shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service, even if advised of the possibility of such damages.
-      </p>
-
-      <!-- 10. Indemnification -->
-      <h2>10. Indemnification</h2>
-      <p>
-        You agree to indemnify and hold harmless Lockify, its affiliates, officers, directors, employees, and agents from any claims, liabilities, damages, losses, or expenses (including attorneys’ fees) arising out of or in any way connected with:
-      </p>
-      <ul>
-        <li>Your misuse of the Service.</li>
-        <li>Your violation of these Terms.</li>
-        <li>Your violation of any applicable law or third-party rights.</li>
-      </ul>
-
-      <!-- 11. Termination -->
-      <h2>11. Termination</h2>
-      <p>
-        a. We may suspend or terminate your account and access to the Service immediately, without prior notice or liability, for any reason, including if you breach these Terms.<br>
-        b. Upon termination, your right to use the Service will immediately cease.
-      </p>
-
-      <!-- 12. Governing Law -->
-      <h2>12. Governing Law</h2>
-      <p>
-        These Terms shall be governed and construed in accordance with the laws of [Your Jurisdiction], without regard to its conflict of laws principles.
-      </p>
-
-      <!-- 13. Changes to Terms -->
-      <h2>13. Changes to Terms</h2>
-      <p>
-        We reserve the right to modify or replace these Terms at any time. When we make changes, we will revise the “Last Updated” date at the top of this page. It is your responsibility to review these Terms periodically. Your continued use of the Service after any changes constitute acceptance of those changes.
-      </p>
-
-      <!-- 14. Contact Us -->
-      <h2>14. Contact Us</h2>
-      <p>
-        If you have any questions about these Terms, please contact us at: <br>
-        <a href="mailto:support@lockify.com">support@lockify.com</a>
-      </p>
-    </div>
-
-    <!-- FOOTER -->
-    <div class="footer">
-      &copy; 2025 Lockify • 
-      <a href="index.html" target="_blank" rel="noopener noreferrer">Back to Home</a>
+  <!-- TRAP MODAL -->
+  <div id="trap-modal">
+    <div class="modal-content">
+      <div class="glow-text">nuh uh buddy</div>
+      <div class="glow-text">no skid i don't think so</div>
+      <div class="glow-text">leave me alone shi</div>
+      <div class="glow-text">get out of here</div>
+      <div class="glow-text">try again lol</div>
     </div>
   </div>
+
+  <!-- CUSTOM CONTEXT MENU -->
+  <div id="context-menu">
+    <div class="item" data-action="copy-text">Copy Selected Text</div>
+    <div class="item" data-action="copy-resolved">Copy Resolved URL</div>
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-left">
+        <div class="logo" aria-label="Site Logo">
+          <img src="{{ request.url_for('static', path='byp.png') }}" alt="Logo" width="32" height="32" />
+        </div>
+        <a href="#" id="link-home">Home</a>
+        <a href="#" id="link-supported">Supported Websites</a>
+        <a href="#" id="link-premium">Premium Info</a>
+      </div>
+      <div class="nav-right">
+        <button id="api-key-btn" title="Premium Info">🔑</button>
+        <button id="theme-toggle-btn" title="Toggle Dark/Light">🌓</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO / TITLE + INPUT -->
+  <section class="hero container">
+    <h1>THE #1 AD-LINK BYPASSER FOR LOCKR.SO!</h1>
+    <div class="input-wrapper">
+      <input id="link-input" type="text" placeholder="Enter your lockr.so link" autocomplete="off" />
+      <button id="bypass-btn">Bypass</button>
+    </div>
+    <div id="result" class="result"></div>
+  </section>
+
+  <!-- FEATURE CARDS -->
+  <section class="container">
+    <div class="features">
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <h2>Fast &amp; Reliable</h2>
+        <p>Bypass links instantly with our advanced system!<br/>With our custom coded API we can bypass advertisements on multiple websites.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💯</div>
+        <h2>100% Free</h2>
+        <p>Our website is completely free to use, ensuring you can access all features without any cost.<br/>Enjoy unlimited access without hidden fees or subscriptions required!</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h2>Multiple Supported Websites COMING IN THE FUTURE</h2>
+        <p>We plan to support a wide range of websites, including Linkvertise, Admaven, Paster.so, Work.ink, and more.</p>
+        <a href="/supported">See all supported websites</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS SECTION -->
+  <section class="container">
+    <div class="stats-section">
+      <div class="stats-header">Some of our statistics ❤️</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <div id="stat-links" class="stat-number">0</div>
+          <div class="stat-label">Links Bypassed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔗</div>
+          <div class="stat-number">1</div>
+          <div class="stat-label">Supported Services</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-number">1</div>
+          <div class="stat-label">1 month</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JAVASCRIPT: DEVTOOLS, CONTEXT MENU, MODAL & REFRESH TRAP -->
+  <script>
+    (function(){
+      // on-load devtools detection & redirect
+      (function(){
+        const REDIR = 'https://www.bbc.com/future/article/20150422-how-not-to-be-stupid';
+        function detectDevTools(){
+          const threshold = 160;
+          if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
+            window.location.href = REDIR;
+          }
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined'
+           || typeof __VUE_DEVTOOLS_GLOBAL_HOOK__   !== 'undefined') {
+            window.location.href = REDIR;
+          }
+        }
+        window.addEventListener('load', detectDevTools);
+        setInterval(detectDevTools, 1000);
+      })();
+
+      // ==== endpoint obfuscation ====
+      const EP = {
+        resolve:   'L3Jlc29sdmU=',
+        stats:     'L3N0YXRz',
+        supported: 'L3N1cHBvcnRlZA==',
+        premium:   'L3ByZW1pdW0='
+      };
+      function D(e){ return atob(EP[e]); }
+
+      // rewrite nav hrefs
+      document.getElementById('link-supported').href = D('supported');
+      document.getElementById('link-premium').href   = D('premium');
+      document.getElementById('api-key-btn').addEventListener('click', ()=> location.href = D('premium'));
+
+      // capture resolved URL
+      let lastResolved = '';
+      const origFetch = window.fetch;
+      window.fetch = async (...args) => {
+        const res = await origFetch.apply(this, args);
+        if (args[0] === D('resolve') && res.ok) {
+          try {
+            const j = await res.clone().json();
+            if (j.success && j.target_url) lastResolved = j.target_url;
+          } catch {}
+        }
+        return res;
+      };
+
+      // elements
+      const modal = document.getElementById('trap-modal');
+      const audio = document.getElementById('trap-audio');
+      const menu  = document.getElementById('context-menu');
+      let lastSelection = '';
+      let confirmCount = 0;
+
+      // show trap modal + audio + dynamic moving text
+      function showTrap(){
+        audio.currentTime = 0; audio.play();
+        modal.style.display = 'flex';
+        modal.querySelectorAll('.trap-text').forEach(el=>el.remove());
+        const messages = [
+          "nuh uh buddy","no skid i don't think so",
+          "leave me alone shi","get out of here","try again lol"
+        ];
+        for(let i=0;i<20;i++){
+          const msg = messages[Math.floor(Math.random()*messages.length)];
+          const span = document.createElement('div');
+          span.className = 'trap-text';
+          span.textContent = msg;
+          span.style.top  = Math.random()*90 + 'vh';
+          span.style.left = Math.random()*90 + 'vw';
+          span.style.animationDelay = Math.random()*2 + 's';
+          span.style.fontSize = (1 + Math.random()*1.5) + 'rem';
+          modal.appendChild(span);
+          setTimeout(()=>span.remove(),10000);
+        }
+      }
+
+      // DevTools / view-source / contextmenu intercept
+      document.addEventListener('keydown', e=>{
+        if (e.keyCode===123 ||
+            (e.ctrlKey&&e.shiftKey&&/[IJC]/i.test(e.key)) ||
+            (e.ctrlKey&&/U/i.test(e.key))
+        ){
+          e.preventDefault(); showTrap();
+        }
+      }, true);
+
+      document.addEventListener('contextmenu', e=>{
+        e.preventDefault();
+        lastSelection = window.getSelection().toString();
+        menu.style.top = e.clientY+'px';
+        menu.style.left= e.clientX+'px';
+        menu.style.display='block';
+        showTrap();
+      });
+
+      document.addEventListener('click', ()=> menu.style.display='none');
+
+      // context menu actions
+      menu.addEventListener('click', async e=>{
+        const a = e.target.dataset.action;
+        if(a==='copy-text' && lastSelection){
+          await navigator.clipboard.writeText(lastSelection);
+        }
+        if(a==='copy-resolved' && lastResolved){
+          await navigator.clipboard.writeText(lastResolved);
+        }
+        menu.style.display='none';
+      });
+
+      // before unload (refresh/navigate away)
+      window.addEventListener('beforeunload', e=>{
+        if(confirmCount<2){
+          e.preventDefault(); e.returnValue='';
+          const ans = prompt('Do you promise not to try and view the code again?', 'Type YES');
+          if(ans && ans.toUpperCase()==='YES'){
+            confirmCount++;
+            if(confirmCount<2){
+              alert('One more time! Do you promise?');
+            } else {
+              audio.pause();
+              window.removeEventListener('beforeunload', arguments.callee);
+              location.reload();
+            }
+          }
+        }
+      });
+
+      // DARK/LIGHT toggle, stats & bypass logic
+      (function(){
+        const themeToggleBtn = document.getElementById("theme-toggle-btn");
+        if(localStorage.getItem("theme")==="light"){
+          document.documentElement.style.setProperty("--bg-main","#ffffff");
+          document.documentElement.style.setProperty("--bg-card","#f1f1f1");
+          document.documentElement.style.setProperty("--bg-input","#f1f1f1");
+          document.documentElement.style.setProperty("--text-main","#121212");
+          document.documentElement.style.setProperty("--text-subtle","#555555");
+        }
+        themeToggleBtn.addEventListener("click", ()=>{
+          const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg-main").trim();
+          if(bg==="#121212"){
+            document.documentElement.style.setProperty("--bg-main","#ffffff");
+            document.documentElement.style.setProperty("--bg-card","#f1f1f1");
+            document.documentElement.style.setProperty("--bg-input","#f1f1f1");
+            document.documentElement.style.setProperty("--text-main","#121212");
+            document.documentElement.style.setProperty("--text-subtle","#555555");
+            localStorage.setItem("theme","light");
+          } else {
+            document.documentElement.style.setProperty("--bg-main","#121212");
+            document.documentElement.style.setProperty("--bg-card","#1f1f1f");
+            document.documentElement.style.setProperty("--bg-input","#1f1f1f");
+            document.documentElement.style.setProperty("--text-main","#ffffff");
+            document.documentElement.style.setProperty("--text-subtle","#bbbbbb");
+            localStorage.setItem("theme","dark");
+          }
+        });
+
+        const statLinks = document.getElementById("stat-links");
+        async function fetchStats(){
+          try{
+            let r = await fetch(D('stats'));
+            if(!r.ok) throw "";
+            let j = await r.json();
+            statLinks.textContent = j.total_links_bypassed;
+          }catch{
+            statLinks.textContent = "—";
+          }
+        }
+        fetchStats();
+
+        const btn = document.getElementById("bypass-btn"),
+              inp = document.getElementById("link-input"),
+              res = document.getElementById("result");
+        btn.addEventListener("click", async ()=>{
+          let url = inp.value.trim();
+          res.textContent = "";
+          if(!url){ res.textContent="⚠️ Please enter a link first."; return; }
+          btn.disabled = true; btn.textContent="Bypassing…";
+          try {
+            let r = await fetch(D('resolve'), {
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({url})
+            });
+            if(!r.ok){
+              let e = await r.json();
+              throw new Error(e.detail||"Unknown error");
+            }
+            let d = await r.json();
+            if(d.success && d.target_url){
+              res.innerHTML = '✅ Resolved link: <a href="'+d.target_url+'" target="_blank">'+d.target_url+'</a>';
+              fetchStats();
+            } else {
+              res.textContent = "❌ "+(d.message||"Failed to resolve link.");
+            }
+          } catch(err){
+            res.textContent = "❌ Error: "+(err.message||"Could not reach API.");
+          } finally {
+            btn.disabled = false; btn.textContent="Bypass";
+          }
+        });
+        inp.addEventListener("keypress", e=>{ if(e.key==="Enter") btn.click(); });
+      })();
+
+    })();
+  </script>
 </body>
 </html>
