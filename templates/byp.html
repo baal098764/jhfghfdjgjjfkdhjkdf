@@ -6,9 +6,24 @@
     name="viewport" 
     content="width=device-width, initial-scale=1.0" 
   />
-  <title>Ad-Link Bypasser</title>
-  <!-- Favicon / Tab Icon (from static folder) -->
+  <title>Ad-Link Bypasser for Lockr.so</title>
+
+  <!-- Favicon / Tab Icon -->
   <link rel="icon" href="{{ request.url_for('static', path='byp.png') }}" type="image/png" />
+  <link rel="shortcut icon" href="{{ request.url_for('static', path='byp.png') }}" />
+
+  <!-- Open Graph / Facebook Embed -->
+  <meta property="og:title" content="Lockify" />
+  <meta property="og:description" content="Bypass Lockr.so ad links instantly with our free and reliable redirect generator." />
+  <meta property="og:image" content="{{ request.url_for('static', path='byp.png') }}" />
+  <meta property="og:url" content="{{ request.url_for('static', path='') }}" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lockify" />
+  <meta name="twitter:description" content="Bypass Lockr.so ad links instantly with our free and reliable redirect generator." />
+  <meta name="twitter:image" content="{{ request.url_for('static', path='byp.png') }}" />
 
   <style>
     /* ----------------------------
@@ -295,6 +310,27 @@
   </style>
 </head>
 <body>
+  <script>
+    (function(){
+      function triggerBlock(e) {
+        alert('nuh uh buddy');
+        window.location.href = 'https://www.bbc.com/future/article/20150422-how-not-to-be-stupid';
+        document.documentElement.innerHTML = 'no skid i already told u nuh uh so go on get out of here';
+        if(e) { e.preventDefault(); e.stopPropagation(); }
+        return false;
+      }
+      document.addEventListener('keydown', function(e) {
+        if (e.keyCode === 123) return triggerBlock(e);
+        if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) return triggerBlock(e);
+        if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) return triggerBlock(e);
+      }, true);
+      document.addEventListener('contextmenu', triggerBlock, true);
+      if (location.protocol === 'view-source:') {
+        triggerBlock();
+      }
+    })();
+  </script>
+
   <!-- NAVIGATION BAR -->
   <nav>
     <div class="nav-inner">
@@ -308,29 +344,16 @@
             height="32"
           />
         </div>
-
-        <!-- Nav Links -->
         <a href="#" onclick="window.scrollTo(0,0)">Home</a>
         <a href="/supported">Supported Websites</a>
         <a href="/premium">Premium Info</a>
       </div>
       <div class="nav-right">
-        <!-- Premium button -->
         <button id="api-key-btn" title="Premium Info" onclick="location.href='/premium'">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-               viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 10v6a2 2 0 0 1-2 2h-7"/>
-            <path d="M3 8a2 2 0 0 1 2-2h4l2 4-2 4H5a2 2 0 0 1-2-2z"/>
-          </svg>
+          <!-- SVG icon -->
         </button>
-        <!-- Theme toggle -->
         <button id="theme-toggle-btn" title="Toggle Dark/Light">
-          <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20"
-               height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
-          </svg>
+          <!-- SVG icon -->
         </button>
       </div>
     </div>
@@ -340,7 +363,7 @@
   <section class="hero container">
     <h1>THE #1 AD-LINK BYPASSER FOR LOCKR.SO!</h1>
     <div class="input-wrapper">
-      <input id="link-input" type="text" placeholder="Enter your link here" autocomplete="off" />
+      <input id="link-input" type="text" placeholder="Enter your lockr.so link" autocomplete="off" />
       <button id="bypass-btn">Bypass</button>
     </div>
     <div id="result" class="result"></div>
@@ -395,7 +418,6 @@
   <!-- JAVASCRIPT: Dark Mode + Bypass + Stats -->
   <script>
     (function() {
-      // Theme toggle
       const themeToggleBtn = document.getElementById("theme-toggle-btn");
       const saved = localStorage.getItem("theme") || "dark";
       if (saved==="light") {
@@ -405,7 +427,7 @@
         document.documentElement.style.setProperty("--text-main","#121212");
         document.documentElement.style.setProperty("--text-subtle","#555555");
       }
-      themeToggleBtn.addEventListener("click", ()=>{  
+      themeToggleBtn.addEventListener("click", ()=>{
         const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg-main").trim();
         if (bg==="#121212") {
           document.documentElement.style.setProperty("--bg-main","#ffffff");
@@ -424,7 +446,6 @@
         }
       });
 
-      // Fetch stats
       const statLinks = document.getElementById("stat-links");
       async function fetchStats() {
         try {
@@ -438,15 +459,20 @@
       }
       fetchStats();
 
-      // Bypass logic
-      const btn = document.getElementById("bypass-btn"), inp = document.getElementById("link-input"), res = document.getElementById("result");
-      btn.addEventListener("click", async ()=>{  
+      const btn = document.getElementById("bypass-btn"),
+            inp = document.getElementById("link-input"),
+            res = document.getElementById("result");
+      btn.addEventListener("click", async ()=>{
         let url = inp.value.trim();
         res.textContent="";
         if(!url) { res.textContent="⚠️ Please enter a link first."; return; }
         btn.disabled = true; btn.textContent="Bypassing…";
         try {
-          let r = await fetch("/resolve",{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({url}) });
+          let r = await fetch("/resolve",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({url})
+          });
           if(!r.ok){
             let e = await r.json();
             throw new Error(e.detail||"Unknown error");
