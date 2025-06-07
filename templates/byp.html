@@ -42,6 +42,7 @@
       font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
         Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
       line-height: 1.5;
+      overflow-x: hidden;
     }
     a {
       color: inherit;
@@ -288,33 +289,34 @@
     }
 
     /* ----------------------------
-       GLOWING CUSTOM MESSAGE
+       MLG-STYLE TRAP TEXT
     ---------------------------- */
-    #custom-message {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      font-size: 1.25rem;
-      font-weight: bold;
+    .trap-text {
+      position: absolute;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #00ff00;
+      text-transform: uppercase;
+      white-space: nowrap;
+      animation: float 4s ease-in-out infinite, glow 1.5s ease-in-out infinite alternate;
       pointer-events: none;
-      color: #4C7BF7;
-      text-shadow:
-        0 0 5px #4C7BF7,
-        0 0 10px #4C7BF7,
-        0 0 20px #4C7BF7;
-      animation: glow-blue 1.5s ease-in-out infinite alternate;
     }
-    @keyframes glow-blue {
+    @keyframes float {
+      0%   { transform: translateY(0)    translateX(0); }
+      50%  { transform: translateY(-20px) translateX(10px); }
+      100% { transform: translateY(0)    translateX(0); }
+    }
+    @keyframes glow {
       from {
         text-shadow:
-          0 0 5px #4C7BF7,
-          0 0 10px #4C7BF7;
+          0 0 5px #00ff00,
+          0 0 10px #00ff00;
       }
       to {
         text-shadow:
-          0 0 10px #4C7BF7,
-          0 0 20px #4C7BF7,
-          0 0 30px #4C7BF7;
+          0 0 15px #00ff00,
+          0 0 30px #00ff00,
+          0 0 45px #00ff00;
       }
     }
 
@@ -330,137 +332,34 @@
       box-shadow: var(--shadow);
       z-index: 10000;
       padding: 0.25rem 0;
+      font-size: 0.95rem;
     }
     #context-menu .item {
       padding: 0.5rem 1rem;
       cursor: pointer;
-      white-space: nowrap;
-      font-size: 0.95rem;
+      color: #fff;
     }
     #context-menu .item:hover {
       background: #2a2a2a;
     }
-
-    /* ----------------------------
-       ANTI-DEVTOOLS OVERLAY
-    ---------------------------- */
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    .overlay.visible {
-      visibility: visible;
-      opacity: 1;
-    }
-    .overlay .message {
-      color: #ff0055;
-      font-size: 2rem;
-      text-align: center;
-      text-shadow:
-        0 0 10px #ff0055,
-        0 0 20px #ff0055,
-        0 0 30px #ff0055;
-      animation: glow 1.5s ease-in-out infinite alternate;
-    }
-    @keyframes glow {
-      from {
-        text-shadow:
-          0 0 10px #ff0055,
-          0 0 20px #ff0055;
-      }
-      to {
-        text-shadow:
-          0 0 20px #ff0055,
-          0 0 30px #ff0055,
-          0 0 40px #ff0055;
-      }
-    }
-
-    /* ----------------------------
-       MEDIA QUERIES
-    ---------------------------- */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 1.75rem;
-      }
-      .input-wrapper button {
-        padding: 0 1rem;
-      }
-    }
-    @media (max-width: 480px) {
-      nav .nav-left > a {
-        margin-right: 1rem;
-        font-size: 0.9rem;
-      }
-      .nav-right > button {
-        margin-left: 0.5rem;
-      }
-    }
   </style>
 </head>
 <body>
-  <!-- Anti-DevTools Overlay -->
-  <div class="overlay" id="antiOverlay">
-    <div class="message">nuh uh buddy</div>
-  </div>
-
-  <!-- CUSTOM GLOWING MESSAGE -->
-  <div id="custom-message">🚀 Enjoy bypassing your links! 🚀</div>
+  <!-- LOOPING AUDIO TRAP -->
+  <audio id="trap-audio"
+       src="{{ url_for('static', filename='audio.mp3') }}"
+       loop preload="auto"></audio>
 
   <!-- CUSTOM CONTEXT MENU -->
   <div id="context-menu">
-    <div class="item" data-action="copy-page">Copy Page URL</div>
-    <div class="item" data-action="copy-link">Copy Link HREF</div>
+    <div class="item" data-action="copy-text">Copy Selected Text</div>
+    <div class="item" data-action="copy-resolved">Copy Resolved URL</div>
   </div>
-
-  <script>
-    (function(){
-      // show the custom overlay
-      function showOverlay(msg) {
-        const o = document.getElementById('antiOverlay');
-        o.querySelector('.message').textContent = msg;
-        o.classList.add('visible');
-      }
-
-      function triggerBlock(e) {
-        // replace native alert
-        showOverlay('nuh uh buddy');
-        // original redirect & content wipe
-        window.location.href = 'https://www.bbc.com/future/article/20150422-how-not-to-be-stupid';
-        document.documentElement.innerHTML = 'no skid i already told u nuh uh so go on get out of here';
-        if(e) { e.preventDefault(); e.stopPropagation(); }
-        return false;
-      }
-
-      document.addEventListener('keydown', function(e) {
-        if (e.keyCode === 123) return triggerBlock(e);
-        if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) return triggerBlock(e);
-        if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) return triggerBlock(e);
-      }, true);
-
-      // disable the original contextmenu blocker (commented out)
-      // document.addEventListener('contextmenu', triggerBlock, true);
-
-      if (location.protocol === 'view-source:') {
-        triggerBlock();
-      }
-    })();
-  </script>
 
   <!-- NAVIGATION BAR -->
   <nav>
     <div class="nav-inner">
       <div class="nav-left">
-        <!-- Logo from static folder -->
         <div class="logo" aria-label="Site Logo">
           <img
             src="{{ request.url_for('static', path='byp.png') }}"
@@ -540,13 +439,99 @@
     </div>
   </section>
 
-  <!-- JAVASCRIPT: Dark Mode + Bypass + Stats + CONTEXT MENU -->
+  <!-- DEVTOOLS TRAP & CONTEXT MENU SCRIPT -->
+  <script>
+    (function(){
+      const messages = [
+        "no skid i don't think so",
+        "leave me alone shi",
+        "nuh uh buddy",
+        "get out of here",
+        "try again lol"
+      ];
+
+      function triggerTrap() {
+        // play audio
+        const audio = document.getElementById('trap-audio');
+        audio.volume = 1;
+        audio.play();
+
+        // scatter trap text
+        for (let i = 0; i < 20; i++) {
+          const msg = messages[Math.floor(Math.random() * messages.length)];
+          const span = document.createElement('div');
+          span.className = 'trap-text';
+          span.textContent = msg;
+          span.style.top  = Math.random() * 90 + 'vh';
+          span.style.left = Math.random() * 90 + 'vw';
+          span.style.animationDelay = (Math.random() * 2) + 's';
+          span.style.fontSize = (1 + Math.random()*1.5) + 'rem';
+          document.body.appendChild(span);
+          setTimeout(() => span.remove(), 10000);
+        }
+      }
+
+      document.addEventListener('keydown', e => {
+        if (
+          e.keyCode === 123 ||
+          (e.ctrlKey && e.shiftKey && /[IJC]/i.test(e.key)) ||
+          (e.ctrlKey && /U/i.test(e.key))
+        ) {
+          e.preventDefault();
+          triggerTrap();
+        }
+      }, true);
+
+      // context menu logic
+      const menu = document.getElementById('context-menu');
+      let lastSelection = '';
+      let lastResolved = '';
+
+      // override fetch to capture resolved URL
+      const origFetch = window.fetch;
+      window.fetch = async function(...args) {
+        const res = await origFetch.apply(this, args);
+        if (args[0].endsWith('/resolve') && res.ok) {
+          try {
+            const data = await res.clone().json();
+            if (data.success && data.target_url) lastResolved = data.target_url;
+          } catch {}
+        }
+        return res;
+      };
+
+      document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        lastSelection = window.getSelection().toString();
+        menu.style.top = e.clientY + 'px';
+        menu.style.left = e.clientX + 'px';
+        menu.style.display = 'block';
+      });
+
+      document.addEventListener('click', () => {
+        menu.style.display = 'none';
+      });
+
+      menu.addEventListener('click', async e => {
+        const action = e.target.dataset.action;
+        if (action === 'copy-text' && lastSelection) {
+          await navigator.clipboard.writeText(lastSelection);
+        }
+        if (action === 'copy-resolved' && lastResolved) {
+          await navigator.clipboard.writeText(lastResolved);
+        }
+        menu.style.display = 'none';
+      });
+    })();
+  </script>
+
+  <!-- DARK/LIGHT TOGGLE, STATS FETCH & BYPASS LOGIC -->
   <script>
     (function() {
-      // Dark/Light toggle
+      // theme toggle
       const themeToggleBtn = document.getElementById("theme-toggle-btn");
       const saved = localStorage.getItem("theme") || "dark";
-      if (saved==="light") {
+      if (saved === "light") {
         document.documentElement.style.setProperty("--bg-main","#ffffff");
         document.documentElement.style.setProperty("--bg-card","#f1f1f1");
         document.documentElement.style.setProperty("--bg-input","#f1f1f1");
@@ -555,7 +540,7 @@
       }
       themeToggleBtn.addEventListener("click", ()=>{
         const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg-main").trim();
-        if (bg==="#121212") {
+        if (bg === "#121212") {
           document.documentElement.style.setProperty("--bg-main","#ffffff");
           document.documentElement.style.setProperty("--bg-card","#f1f1f1");
           document.documentElement.style.setProperty("--bg-input","#f1f1f1");
@@ -572,12 +557,12 @@
         }
       });
 
-      // Stats counter
+      // stats counter
       const statLinks = document.getElementById("stat-links");
       async function fetchStats() {
         try {
           let r = await fetch("/stats");
-          if(!r.ok) throw "";
+          if (!r.ok) throw "";
           let j = await r.json();
           statLinks.textContent = j.total_links_bypassed;
         } catch {
@@ -586,63 +571,39 @@
       }
       fetchStats();
 
-      // Bypass form
+      // bypass logic
       const btn = document.getElementById("bypass-btn"),
             inp = document.getElementById("link-input"),
             res = document.getElementById("result");
       btn.addEventListener("click", async ()=>{
         let url = inp.value.trim();
-        res.textContent="";
-        if(!url) { res.textContent="⚠️ Please enter a link first."; return; }
-        btn.disabled = true; btn.textContent="Bypassing…";
+        res.textContent = "";
+        if (!url) { res.textContent = "⚠️ Please enter a link first."; return; }
+        btn.disabled = true; btn.textContent = "Bypassing…";
         try {
-          let r = await fetch("/resolve",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({url})
+          let r = await fetch("/resolve", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({url})
           });
-          if(!r.ok){
+          if (!r.ok) {
             let e = await r.json();
             throw new Error(e.detail||"Unknown error");
           }
           let d = await r.json();
-          if(d.success && d.target_url){
-            res.innerHTML = '✅ Resolved link: <a href="'+d.target_url+'" target="_blank">'+d.target_url+"</a>";
+          if (d.success && d.target_url) {
+            res.innerHTML = '✅ Resolved link: <a href="'+d.target_url+'" target="_blank">'+d.target_url+'</a>';
             fetchStats();
           } else {
-            res.textContent = "❌ "+(d.message||"Failed to resolve link.");
+            res.textContent = "❌ " + (d.message||"Failed to resolve link.");
           }
         } catch(err) {
           res.textContent = "❌ Error: "+(err.message||"Could not reach API.");
         } finally {
-          btn.disabled = false; btn.textContent="Bypass";
+          btn.disabled = false; btn.textContent = "Bypass";
         }
       });
-      inp.addEventListener("keypress", e=>{ if(e.key==="Enter") btn.click(); });
-
-      // CUSTOM CONTEXT MENU LOGIC
-      const menu = document.getElementById('context-menu');
-      document.addEventListener('contextmenu', e => {
-        e.preventDefault();
-        const { clientX: x, clientY: y, target } = e;
-        menu.style.top = y + 'px';
-        menu.style.left = x + 'px';
-        menu.style.display = 'block';
-        // store the clicked element
-        menu.dataset.targetHref = (target.closest('a') || {}).href || '';
-      });
-      document.addEventListener('click', () => {
-        menu.style.display = 'none';
-      });
-      menu.addEventListener('click', async e => {
-        const action = e.target.dataset.action;
-        if (action === 'copy-page') {
-          await navigator.clipboard.writeText(window.location.href);
-        } else if (action === 'copy-link' && menu.dataset.targetHref) {
-          await navigator.clipboard.writeText(menu.dataset.targetHref);
-        }
-        menu.style.display = 'none';
-      });
+      inp.addEventListener("keypress", e => { if (e.key === "Enter") btn.click(); });
     })();
   </script>
 </body>
