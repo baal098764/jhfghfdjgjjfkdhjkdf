@@ -519,24 +519,34 @@
     </div>
   </section>
 
-  <!-- JAVASCRIPT: DEVTOOLS, CONTEXT MENU, MODAL & REFRESH TRAP -->
+  <!-- JAVASCRIPT: DEVTOOLS, EXTENSION BLOCK, CONTEXT MENU, MODAL & REFRESH TRAP -->
   <script>
     (function(){
-      // on-load devtools detection & redirect
+      // redirect if devtools already open or extensions detected
       (function(){
         const REDIR = 'https://www.bbc.com/future/article/20150422-how-not-to-be-stupid';
         function detectDevTools(){
-          const threshold = 160;
-          if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
-            window.location.href = REDIR;
+          if (window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160) {
+            return true;
           }
-          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined'
-           || typeof __VUE_DEVTOOLS_GLOBAL_HOOK__   !== 'undefined') {
-            window.location.href = REDIR;
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined' ||
+              typeof __VUE_DEVTOOLS_GLOBAL_HOOK__   !== 'undefined') {
+            return true;
           }
+          return false;
         }
-        window.addEventListener('load', detectDevTools);
-        setInterval(detectDevTools, 1000);
+        if (detectDevTools()) window.location.href = REDIR;
+        window.addEventListener('resize', ()=> detectDevTools() && (location.href=REDIR));
+
+        // block common source-inspection extensions
+        const blockedGlobals = [
+          '__REACT_DEVTOOLS_GLOBAL_HOOK__',
+          '__VUE_DEVTOOLS_GLOBAL_HOOK__',
+          '__REDUX_DEVTOOLS_EXTENSION__'
+        ];
+        blockedGlobals.forEach(hook=>{
+          if (window[hook]) location.href = REDIR;
+        });
       })();
 
       // ==== endpoint obfuscation ====
